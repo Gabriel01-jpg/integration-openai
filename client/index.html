@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clinical Note Input</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f9fafb;
+        color: #111827;
+        line-height: 1.6;
+      }
+
+      .container {
+        min-height: 100vh;
+        padding: 2rem 1rem;
+      }
+
+      .max-w-2xl {
+        max-width: 42rem;
+        margin: 0 auto;
+      }
+
+      .max-w-4xl {
+        max-width: 56rem;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .header h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.5rem;
+      }
+
+      .header p {
+        color: #6b7280;
+      }
+
+      .card {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+      }
+
+      .card-header {
+        padding: 1.5rem 1.5rem 0;
+      }
+
+      .card-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .card-description {
+        color: #6b7280;
+        font-size: 0.875rem;
+      }
+
+      .card-content {
+        padding: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .select {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background: white;
+        font-size: 0.875rem;
+        transition: border-color 0.2s;
+      }
+
+      .select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .upload-area {
+        border: 2px dashed #d1d5db;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+
+      .upload-area:hover {
+        border-color: #9ca3af;
+      }
+
+      .upload-area.dragover {
+        border-color: #3b82f6;
+        background-color: #eff6ff;
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .upload-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .upload-text {
+        font-weight: 500;
+        color: #374151;
+        font-size: 0.875rem;
+      }
+
+      .upload-subtext {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+      }
+
+      .file-preview {
+        background-color: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-top: 1rem;
+      }
+
+      .file-preview-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .file-info {
+        flex: 1;
+      }
+
+      .file-name {
+        font-weight: 500;
+        color: #1e40af;
+        font-size: 0.875rem;
+      }
+
+      .file-size {
+        font-size: 0.75rem;
+        color: #3b82f6;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+      }
+
+      .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background-color: #2563eb;
+      }
+
+      .btn-primary:disabled {
+        background-color: #9ca3af;
+        cursor: not-allowed;
+      }
+
+      .btn-secondary {
+        background-color: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+      }
+
+      .btn-secondary:hover {
+        background-color: #e5e7eb;
+      }
+
+      .btn-ghost {
+        background-color: transparent;
+        color: #3b82f6;
+      }
+
+      .btn-ghost:hover {
+        background-color: #f3f4f6;
+      }
+
+      .btn-full {
+        width: 100%;
+      }
+
+      .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .icon {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .icon-lg {
+        width: 2rem;
+        height: 2rem;
+      }
+
+      .info-card {
+        margin-top: 1.5rem;
+      }
+
+      .info-content {
+        padding: 1.5rem 1.5rem 1.5rem;
+      }
+
+      .info-title {
+        font-weight: 500;
+        color: #111827;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .info-list {
+        list-style: disc;
+        list-style-position: inside;
+        color: #6b7280;
+        font-size: 0.875rem;
+      }
+
+      .info-list li {
+        margin-bottom: 0.25rem;
+      }
+
+      .toast {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        max-width: 20rem;
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast.error {
+        border-left: 4px solid #ef4444;
+      }
+
+      .toast.success {
+        border-left: 4px solid #10b981;
+      }
+
+      .toast-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        font-size: 0.875rem;
+      }
+
+      .toast-description {
+        color: #6b7280;
+        font-size: 0.75rem;
+      }
+
+      .spinner {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* Patient Notes Styles */
+      .patient-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .patient-info {
+        flex: 1;
+      }
+
+      .patient-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111827;
+      }
+
+      .patient-mrn {
+        color: #6b7280;
+        font-size: 0.875rem;
+      }
+
+      .notes-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .note-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        transition: box-shadow 0.2s;
+      }
+
+      .note-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .note-card.new-note {
+        border-left: 4px solid #10b981;
+        background-color: #f0fdf4;
+      }
+
+      .note-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+      }
+
+      .note-date {
+        font-weight: 600;
+        color: #111827;
+        font-size: 0.875rem;
+      }
+
+      .note-status {
+        padding: 0.125rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      .status-completed {
+        background-color: #dcfce7;
+        color: #166534;
+      }
+
+      .status-processing {
+        background-color: #fef3c7;
+        color: #92400e;
+      }
+
+      .note-content {
+        color: #374151;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
+      }
+
+      .note-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+
+      .note-type {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .back-button {
+        margin-bottom: 1rem;
+      }
+
+      @media (max-width: 640px) {
+        .container {
+          padding: 1rem 0.5rem;
+        }
+
+        .card-content {
+          padding: 1rem;
+        }
+
+        .patient-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Note Input Form View -->
+      <div id="noteInputView" class="max-w-2xl">
+        <div class="header">
+          <h1>Clinical Note Input</h1>
+          <p>Upload audio notes for AI-powered transcription and analysis</p>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg
+                class="icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+                ></path>
+              </svg>
+              New Audio Note
+            </div>
+            <div class="card-description">
+              Select a patient and upload an audio file to create a new clinical
+              note.
+            </div>
+          </div>
+          <div class="card-content">
+            <form id="noteForm">
+              <!-- Patient Selection -->
+              <div class="form-group">
+                <label class="label" for="patientSelect">
+                  <svg
+                    class="icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    ></path>
+                  </svg>
+                  Select Patient
+                </label>
+                <div style="display: flex; gap: 12px">
+                  <select id="patientSelect" class="select" required>
+                    <option value="">Choose a patient...</option>
+                  </select>
+                  <button
+                    style="display: none"
+                    class="btn btn-ghost"
+                    id="see-patient"
+                  >
+                    See patient notes
+                  </button>
+                </div>
+              </div>
+
+              <!-- Audio File Upload -->
+              <div class="form-group">
+                <label class="label">
+                  <svg
+                    class="icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    ></path>
+                  </svg>
+                  Audio File
+                </label>
+                <div class="upload-area" id="uploadArea">
+                  <input
+                    type="file"
+                    id="audioFile"
+                    class="file-input"
+                    accept="audio/*"
+                    required
+                  />
+                  <div class="upload-content">
+                    <svg
+                      class="icon-lg"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      style="color: #9ca3af"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+                      ></path>
+                    </svg>
+                    <div>
+                      <div class="upload-text">Click to upload audio file</div>
+                      <div class="upload-subtext">
+                        Supports MP3, WAV, M4A, and other audio formats
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- File Preview -->
+                <div id="filePreview" class="file-preview hidden">
+                  <div class="file-preview-content">
+                    <svg
+                      class="icon"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      style="color: #3b82f6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+                      ></path>
+                    </svg>
+                    <div class="file-info">
+                      <div class="file-name" id="fileName"></div>
+                      <div class="file-size" id="fileSize"></div>
+                    </div>
+                    <button type="button" class="btn btn-ghost" id="removeFile">
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button
+                type="submit"
+                class="btn btn-primary btn-full"
+                id="submitBtn"
+              >
+                <svg
+                  class="icon"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  ></path>
+                </svg>
+                Submit for AI Processing
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="card info-card">
+          <div class="info-content">
+            <div class="info-title">How it works:</div>
+            <ul class="info-list">
+              <li>Select the patient from the dropdown menu</li>
+              <li>Upload an audio recording of your clinical note</li>
+              <li>
+                Our AI will transcribe and structure the note automatically
+              </li>
+              <li>
+                Review and edit the processed note before saving to patient
+                record
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patient Notes View -->
+      <div id="patientNotesView" class="max-w-4xl hidden">
+        <div class="back-button">
+          <button class="btn btn-secondary" id="backToFormBtn">
+            <svg
+              class="icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              ></path>
+            </svg>
+            Back to Note Input
+          </button>
+        </div>
+
+        <div class="patient-header">
+          <div class="patient-info">
+            <div class="patient-name" id="currentPatientName">John Smith</div>
+            <div class="patient-mrn" id="currentPatientMrn">MRN001</div>
+          </div>
+          <button class="btn btn-primary" id="addNewNoteBtn">
+            <svg
+              class="icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              ></path>
+            </svg>
+            Add New Note
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg
+                class="icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+              Clinical Notes
+            </div>
+            <div class="card-description">
+              All clinical notes for this patient, including the most recent
+              AI-processed note.
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="notes-grid" id="notesContainer">
+              <!-- Notes will be populated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script>
+      // Patient data
+      const patients = fetch('/patient')
+        .then((response) => response.json())
+        .then((data) => {
+          if (!Array.isArray(data)) {
+            throw new Error('Invalid patient data format');
+          }
+          return data;
+        })
+        .catch((error) => {
+          console.error('Error fetching patient data:', error);
+          return {};
+        });
+
+      let loadedPatients;
+
+      async function loadPatients() {
+        loadedPatients = await patients;
+        loadedPatients.forEach((patient) => {
+          const option = document.createElement('option');
+          option.value = patient.id;
+          option.textContent = `${patient.name} (MRN${patient.mrn})`;
+          patientSelect.appendChild(option);
+        });
+      }
+      loadPatients();
+
+      // DOM elements
+      const form = document.getElementById('noteForm');
+      const patientSelect = document.getElementById('patientSelect');
+      const audioFileInput = document.getElementById('audioFile');
+      const uploadArea = document.getElementById('uploadArea');
+      const filePreview = document.getElementById('filePreview');
+      const fileName = document.getElementById('fileName');
+      const fileSize = document.getElementById('fileSize');
+      const removeFileBtn = document.getElementById('removeFile');
+      const submitBtn = document.getElementById('submitBtn');
+      const toastContainer = document.getElementById('toastContainer');
+      const seePatientNote = document.getElementById('see-patient');
+
+      // Views
+      const noteInputView = document.getElementById('noteInputView');
+      const patientNotesView = document.getElementById('patientNotesView');
+      const backToFormBtn = document.getElementById('backToFormBtn');
+      const addNewNoteBtn = document.getElementById('addNewNoteBtn');
+      const currentPatientName = document.getElementById('currentPatientName');
+      const currentPatientMrn = document.getElementById('currentPatientMrn');
+      const notesContainer = document.getElementById('notesContainer');
+
+      let selectedFile = null;
+      let isSubmitting = false;
+      let currentPatientId = null;
+
+      // Toast notification function
+      function showToast(title, description, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+                <div class="toast-title">${title}</div>
+                <div class="toast-description">${description}</div>
+            `;
+
+        toastContainer.appendChild(toast);
+
+        // Show toast
+        setTimeout(() => toast.classList.add('show'), 100);
+
+        // Hide and remove toast
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => toastContainer.removeChild(toast), 300);
+        }, 3000);
+      }
+
+      // Format file size
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      // Format date
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+      }
+
+      // Show patient notes view
+      function showPatientNotes(patientId) {
+        currentPatientId = patientId;
+        const patient = loadedPatients.find((p) => p.id === patientId);
+
+        currentPatientName.textContent = patient.name;
+        currentPatientMrn.textContent = patient.mrn;
+
+        renderNotes(patientId);
+
+        noteInputView.classList.add('hidden');
+        patientNotesView.classList.remove('hidden');
+      }
+
+      // Render notes for a patient
+      async function renderNotes(patientId) {
+        const notes = await fetch(`/patient/${patientId}/notes`)
+          .then((response) => response.json())
+          .catch((error) => {
+            console.error('Error fetching notes:', error);
+            return [];
+          });
+
+        if (notes.length === 0) {
+          notesContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                        <svg style="width: 3rem; height: 3rem; margin: 0 auto 1rem; color: #d1d5db;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p>No notes found for this patient.</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">Upload an audio note to get started.</p>
+                    </div>
+                `;
+          return;
+        }
+
+        notesContainer.innerHTML = notes
+          .map(
+            (note) => `
+                <div class="note-card ${note.status == 'unprocessed' ? 'new-note' : ''}">
+                    <div class="note-header">
+                        <div class="note-date">${new Date(note.created_at).toLocaleDateString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                        <div class="note-status status-${note.status}">
+                            ${note.status === 'processed' ? 'Completed' : 'Processing'}
+                        </div>
+                    </div>
+                    <div class="note-content">${note.summary ?? 'Audio not processed yet. Await some minutos to see summary note'}</div>
+                    <div class="note-footer">
+                        <div class="note-type">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            ${note.status === 'unprocessed' ? 'Just processed' : ''}
+                        </div>
+                    </div>
+                </div>
+            `,
+          )
+          .join('');
+      }
+
+      // Add new note to patient
+      function addNewNote(patientId, audioFileName) {
+        const now = new Date();
+        const newNote = {
+          id: Date.now(),
+          date: now.toISOString().split('T')[0],
+          time: now.toTimeString().slice(0, 5),
+          type: 'Progress Note',
+          status: 'completed',
+          content: `AI-processed note from audio recording "${audioFileName}". Patient discussed current symptoms and treatment progress. Vital signs stable. Recommended continued monitoring and follow-up as needed. Audio transcription completed successfully with high confidence.`,
+          duration: '4:32',
+          isNew: true,
+        };
+
+        if (!patientNotes[patientId]) {
+          patientNotes[patientId] = [];
+        }
+
+        patientNotes[patientId].unshift(newNote);
+      }
+
+      // Handle file selection
+      function handleFileSelect(file) {
+        if (file && file.type.startsWith('audio/')) {
+          selectedFile = file;
+          fileName.textContent = file.name;
+          fileSize.textContent = formatFileSize(file.size);
+          filePreview.classList.remove('hidden');
+
+          showToast(
+            'Audio file selected',
+            `${file.name} (${formatFileSize(file.size)})`,
+          );
+        } else {
+          showToast(
+            'Invalid file type',
+            'Please select an audio file (.mp3, .wav, .m4a, etc.)',
+            'error',
+          );
+        }
+      }
+
+      seePatientNote.addEventListener('click', () => {
+        const patientId = patientSelect.value;
+        if (patientId) {
+          showPatientNotes(patientId);
+        } else {
+          showToast(
+            'No patient selected',
+            'Please select a patient to view their notes.',
+            'error',
+          );
+        }
+      });
+
+      // File input change event
+      audioFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          handleFileSelect(file);
+        }
+      });
+
+      // Upload area click event
+      uploadArea.addEventListener('click', () => {
+        audioFileInput.click();
+      });
+
+      // Drag and drop events
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          handleFileSelect(file);
+          // Update the file input
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          audioFileInput.files = dt.files;
+        }
+      });
+
+      // Remove file event
+      removeFileBtn.addEventListener('click', () => {
+        selectedFile = null;
+        audioFileInput.value = '';
+        filePreview.classList.add('hidden');
+      });
+
+      // Update submit button state
+      function updateSubmitButton() {
+        const hasPatient = patientSelect.value !== '';
+        const hasFile = selectedFile !== null;
+
+        submitBtn.disabled = isSubmitting || !hasPatient || !hasFile;
+        seePatientNote.style.display = hasPatient ? 'inline-block' : 'none';
+      }
+
+      // Listen for form changes
+      patientSelect.addEventListener('change', updateSubmitButton);
+      audioFileInput.addEventListener('change', updateSubmitButton);
+
+      // Back to form button
+      backToFormBtn.addEventListener('click', () => {
+        patientNotesView.classList.add('hidden');
+        noteInputView.classList.remove('hidden');
+      });
+
+      // Add new note button
+      addNewNoteBtn.addEventListener('click', () => {
+        patientNotesView.classList.add('hidden');
+        noteInputView.classList.remove('hidden');
+
+        // Pre-select the current patient
+        if (currentPatientId) {
+          patientSelect.value = currentPatientId;
+          updateSubmitButton();
+        }
+      });
+
+      // Form submission
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const patientId = patientSelect.value;
+
+        if (!patientId) {
+          showToast(
+            'Patient required',
+            'Please select a patient before submitting.',
+            'error',
+          );
+          return;
+        }
+
+        if (!selectedFile) {
+          showToast(
+            'Audio file required',
+            'Please upload an audio file before submitting.',
+            'error',
+          );
+          return;
+        }
+
+        isSubmitting = true;
+        updateSubmitButton();
+
+        // Update button text and add spinner
+        submitBtn.innerHTML = `
+                <svg class="icon spinner" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Processing Note...
+            `;
+
+        try {
+          // Simulate API call
+
+          const formData = new FormData();
+          formData.append('patient_id', patientId);
+          formData.append('audio_file', selectedFile);
+          formData.append('fileName', selectedFile.name);
+          formData.append('fileSize', selectedFile.size);
+          formData.append('fileType', selectedFile.type);
+          await fetch('/patient/secion-g/note', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const patient = patients[patientId];
+          const audioFileName = selectedFile.name;
+
+          showToast(
+            'Note submitted successfully',
+            `Audio note added to process and added to their record.`,
+          );
+
+          // Reset form
+          form.reset();
+          selectedFile = null;
+          filePreview.classList.add('hidden');
+
+          // Show patient notes after a brief delay
+          setTimeout(() => {
+            showPatientNotes(patientId);
+          }, 1000);
+        } catch (error) {
+          console.error('Error submitting note:', error);
+          showToast(
+            'Submission failed',
+            'There was an error processing your note. Please try again.',
+            'error',
+          );
+        } finally {
+          isSubmitting = false;
+          updateSubmitButton();
+
+          // Reset button text
+          submitBtn.innerHTML = `
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Submit for AI Processing
+                `;
+        }
+      });
+
+      // Initial button state
+      updateSubmitButton();
+    </script>
+  </body>
+</html>

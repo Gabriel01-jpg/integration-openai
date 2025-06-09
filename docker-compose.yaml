@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=postgres://admin:admin@database:5432/healthoasis
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=123456
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
+      - AWS_REGION=
+      - AWS_BUCKET_NAME=
+      - S3_ENDPOINT=
+      - OPENAI_API_KEY=
+    depends_on:
+      - database
+      - redis
+    networks:
+      - backend
+  database:
+    image: postgres
+    container_name: database
+    restart: always
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=healthoasis
+    ports:
+      - 5432:5432
+    networks:
+      - backend
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    command: ['redis-server', '--requirepass', '123456']
+    ports:
+      - 6379:6379
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
