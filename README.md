@@ -8,7 +8,7 @@ Prerequisites:
 - Docker
 - Docker Compose
 
-git clone https://github.com/your-username/health-oasis.git
+git clone https://github.com/your-username/integration-openai
 cd health-oasis
 
 #Necessary populate informations about AWS and OPENAI API key on docker-compose env fields
